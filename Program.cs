@@ -35,7 +35,27 @@ string[] randomId = {
 "GQ7Z7NIFS24X5S",
 "T2RTEX7W5VB78A",
 "LP3ZDA9SD739QR",
-"WCHD6OPPM3FVQW"
+"WCHD6OPPM3FVQW",
+"DTR8UCS9SWWE9D",
+"22TA4M4JBF9B0Q",
+"8U8IG1KDY3BOYM",
+"JVQVUSF59KOPF6",
+"1DL2K0LJ02XB9K",
+"G0TE52FG3RO9HQ",
+"4TMUY8NBEBI3JP",
+"HVZQPSQ9A6259F",
+"LY9D2G5XE48KX9",
+"HN8CZGGLULXJMY",
+"O829CQVXZNCEKU",
+"JCBGBL49Q8EVSC",
+"YRJ0DLGR6HIJDL",
+"TV0EE85BEF0E7Y",
+"B6JGJRS3WFJL92",
+"STIRAERZO5ZQ0M",
+"Z390WVMCPZUINQ",
+"00MW72N715MX7S",
+"BLX9OCLQ4FTJ09",
+"7C1868SO557HDE"
 };
 
 try
@@ -52,6 +72,8 @@ try
     // Enter the listening loop.
     while (true)
     {
+        Console.WriteLine("\nHit enter to send new random ID...");
+        Console.ReadLine();
         // Select random ID
         int index = rnd.Next(randomId.Length);
         // Translate the passed message into ASCII and store it as a Byte array.
@@ -61,8 +83,7 @@ try
         streamOut.Write(data_send, 0, data_send.Length);
 
         Console.WriteLine("Sent: {0}", System.Text.Encoding.Default.GetString(data_send));
-        Console.WriteLine("\nHit enter to send new random ID...");
-        Console.Read();
+
     }
    
 }
