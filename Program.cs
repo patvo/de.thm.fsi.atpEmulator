@@ -67,7 +67,7 @@ try
 {
     //TcpClient client = new TcpClient(server, port);
     Int32 portReader = 8890;
-    IPAddress readerAddr = IPAddress.Parse("192.168.178.101");
+    IPAddress readerAddr = IPAddress.Parse("192.168.1.101");
     clientOut = new TcpClient(readerAddr.ToString(), portReader);
 
     // Buffer for reading data
@@ -101,5 +101,5 @@ finally
     //
 }
 
-Console.WriteLine("\nYou reached the end...");
+Console.WriteLine("\nClose applikation.");
 Console.Read();
