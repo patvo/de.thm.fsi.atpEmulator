@@ -83,28 +83,28 @@ try
     // Buffer for reading data
     Byte[] bytes = new Byte[256];
     String dataReceive = null;
+    // Get a stream object for reading and writing
 
-    // Enter the listening loop.
+    NetworkStream streamOut = clientOut.GetStream();
+    Console.Write("Waiting for a connection... ");
 
+    // Perform a blocking call to accept requests.
+    // You could also use server.AcceptSocket() here.
+    TcpClient clientIn = server.AcceptTcpClient();
+    Console.WriteLine("Connected!");
     while (true)
     {
-        Console.Write("Waiting for a connection... ");
-
-        // Perform a blocking call to accept requests.
-        // You could also use server.AcceptSocket() here.
-        TcpClient clientIn = server.AcceptTcpClient();
-        Console.WriteLine("Connected!");
-
-        Console.WriteLine("\nHit enter to send new random ID...");
-        Console.ReadLine();
-        dataReceive = null;
         int index = rnd.Next(randomId.Length);
         // Translate the passed message into ASCII and store it as a Byte array.
         Byte[] data_send = System.Text.Encoding.ASCII.GetBytes(randomId[index]);
 
-        // Get a stream object for reading and writing
+        Console.WriteLine("\nHit enter to send new random ID...");
+        Console.ReadLine();
+        // Send back a response.
+        streamOut.Write(data_send, 0, data_send.Length);
+        Console.WriteLine("Sent: {0}", System.Text.Encoding.Default.GetString(data_send));
+
         NetworkStream streamIn = clientIn.GetStream();
-        NetworkStream streamOut = clientOut.GetStream();
 
         int i;
         // Loop to receive all the data sent by the client.
@@ -113,16 +113,13 @@ try
             // Translate data bytes to a ASCII string.
             dataReceive = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
             Console.WriteLine("Received: {0}", dataReceive);
-
-            // Send back a response.
-            streamOut.Write(data_send, 0, data_send.Length);
-            Console.WriteLine("Sent: {0}", System.Text.Encoding.Default.GetString(data_send));
-
+            break;
         }
 
         // Shutdown and end connection
-        clientIn.Close();
-        streamIn.Close();
+        //clientIn.Close();
+        //streamIn.Close();
+
     }
    
 }
