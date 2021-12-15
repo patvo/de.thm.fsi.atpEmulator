@@ -119,7 +119,6 @@ try
         // Shutdown and end connection
         //clientIn.Close();
         //streamIn.Close();
-
     }
    
 }
@@ -129,7 +128,7 @@ catch (SocketException e)
 }
 finally
 {
-    //
+    server.Stop();
 }
 
 Console.WriteLine("\nClose applikation.");
