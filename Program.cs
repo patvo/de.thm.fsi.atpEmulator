@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
+/// <summary>
+/// This emulator acts like a RFID reader and sends data over TCP/IP connection.
+/// It selects data to send from a pool a of random generated UIDs instead of real scanned card UIDs.
+/// It is used to emulate another RFID reader to test the multi device connection of the main programm.
+/// </summary>
 TcpListener server = null;
 TcpClient clientOut = null;
 Random rnd = new Random();
@@ -66,7 +65,7 @@ string[] randomId = {
 try
 {
     // Set the TcpListener on port xxxx.
-    Int32 portPc = 10001;
+    int portPc = 10001;
     IPAddress localAddr = IPAddress.Parse("192.168.1.145");
     // TcpListener server = new TcpListener(port);
     server = new TcpListener(localAddr, portPc);
@@ -75,23 +74,19 @@ try
 
 
     //TcpClient client = new TcpClient(server, port);
-    Int32 portReader = 8890;
+    int portReader = 8890;
     IPAddress readerAddr = IPAddress.Parse("192.168.1.101");
     clientOut = new TcpClient(readerAddr.ToString(), portReader);
 
 
     // Buffer for reading data
-    Byte[] bytes = new Byte[256];
-    String dataReceive = null;
+    byte[] bytes = new byte[256];
+    string dataReceive = null;
 
     // Enter the listening loop.
-
     while (true)
     {
         Console.Write("Waiting for a connection... ");
-
-        // Perform a blocking call to accept requests.
-        // You could also use server.AcceptSocket() here.
         TcpClient clientIn = server.AcceptTcpClient();
         Console.WriteLine("Connected!");
 
@@ -100,7 +95,7 @@ try
         dataReceive = null;
         int index = rnd.Next(randomId.Length);
         // Translate the passed message into ASCII and store it as a Byte array.
-        Byte[] data_send = System.Text.Encoding.ASCII.GetBytes(randomId[index]);
+        byte[] data_send = System.Text.Encoding.ASCII.GetBytes(randomId[index]);
 
         // Get a stream object for reading and writing
         NetworkStream streamIn = clientIn.GetStream();
@@ -119,12 +114,11 @@ try
             Console.WriteLine("Sent: {0}", System.Text.Encoding.Default.GetString(data_send));
 
         }
-
         // Shutdown and end connection
         clientIn.Close();
         streamIn.Close();
     }
-   
+
 }
 catch (SocketException e)
 {
