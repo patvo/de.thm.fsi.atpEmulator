@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
+/// <summary>
+/// This emulator acts like a RFID reader and sends data over TCP/IP connection.
+/// It selects data to send from a pool a of random generated UIDs instead of real scanned card UIDs.
+/// It is used to emulate another RFID reader to test the multi device connection of the main programm.
+/// </summary>
 TcpListener server = null;
 TcpClient clientOut = null;
 Random rnd = new Random();
@@ -65,32 +64,61 @@ string[] randomId = {
 
 try
 {
+    // Set the TcpListener on port xxxx.
+    int portPc = 10001;
+    IPAddress localAddr = IPAddress.Parse("192.168.1.145");
+    // TcpListener server = new TcpListener(port);
+    server = new TcpListener(localAddr, portPc);
+    // Start listening for client requests.
+    server.Start();
+
+
     //TcpClient client = new TcpClient(server, port);
-    Int32 portReader = 8890;
+    int portReader = 8890;
     IPAddress readerAddr = IPAddress.Parse("192.168.1.101");
     clientOut = new TcpClient(readerAddr.ToString(), portReader);
 
+
     // Buffer for reading data
-    Byte[] bytes = new Byte[256];
-    // Get a stream object for reading and writing
-    NetworkStream streamOut = clientOut.GetStream();
+    byte[] bytes = new byte[256];
+    string dataReceive = null;
+
     // Enter the listening loop.
     while (true)
     {
+        Console.Write("Waiting for a connection... ");
+        TcpClient clientIn = server.AcceptTcpClient();
+        Console.WriteLine("Connected!");
+
         Console.WriteLine("\nHit enter to send new random ID...");
         Console.ReadLine();
-        // Select random ID
+        dataReceive = null;
         int index = rnd.Next(randomId.Length);
         // Translate the passed message into ASCII and store it as a Byte array.
-        Byte[] data_send = System.Text.Encoding.ASCII.GetBytes(randomId[index]);
+        byte[] data_send = System.Text.Encoding.ASCII.GetBytes(randomId[index]);
 
-        // Send back a response.
-        streamOut.Write(data_send, 0, data_send.Length);
+        // Get a stream object for reading and writing
+        NetworkStream streamIn = clientIn.GetStream();
+        NetworkStream streamOut = clientOut.GetStream();
 
-        Console.WriteLine("Sent: {0}", System.Text.Encoding.Default.GetString(data_send));
+        int i;
+        // Loop to receive all the data sent by the client.
+        while ((i = streamIn.Read(bytes, 0, bytes.Length)) != 0)
+        {
+            // Translate data bytes to a ASCII string.
+            dataReceive = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+            Console.WriteLine("Received: {0}", dataReceive);
 
+            // Send back a response.
+            streamOut.Write(data_send, 0, data_send.Length);
+            Console.WriteLine("Sent: {0}", System.Text.Encoding.Default.GetString(data_send));
+
+        }
+        // Shutdown and end connection
+        clientIn.Close();
+        streamIn.Close();
     }
-   
+
 }
 catch (SocketException e)
 {
